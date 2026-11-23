@@ -1,64 +1,92 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
+# Attendance Management System
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A web-based attendance system built with **Laravel 8**, **MySQL**, and **Bootstrap 5** for BSIS 4B Application Development.
 
-## About Laravel
+Teachers can keep a list of students, take attendance for a whole section in one screen, edit or delete records, and print or export an attendance report.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Features
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+| Module | What it does |
+| --- | --- |
+| **Login** | Only signed-in users can open the system. Login attempts are limited to 5 per minute. |
+| **Dashboard** | Today's count of Present, Late, Absent and Excused, students not yet recorded, recent records, and the students with the most absences. |
+| **Students** (CRUD) | Add, view, edit and delete students. Search by student no. or name, filter by section. Each student has a profile with their attendance history. |
+| **Take Attendance** | Pick a date and section, then mark every student at once (Mark all Present / Absent). Time In is filled in automatically for Present and Late. Saving again updates the same records instead of making duplicates. |
+| **Attendance Records** (CRUD) | Add, edit and delete single records. Filter by date range, status, section and student. |
+| **Reports** | Attendance summary per student for any date range and section, with attendance rate. Print it or export it to CSV (opens in Excel). |
+| **Posts** (CRUD) | The original Posts CRUD from the first activity. |
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Rules the system enforces
 
-## Learning Laravel
+- A student number can only be used once.
+- A student can only have one attendance record per day.
+- Attendance cannot be recorded for a future date.
+- Time In is kept only for Present and Late.
+- Deleting a student also deletes that student's attendance records (the system asks first).
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Database
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+| Table | Columns |
+| --- | --- |
+| `students` | id, student_no (unique), first_name, last_name, course, year_level, section |
+| `attendances` | id, student_id → students, date, status (present / late / absent / excused), time_in, remarks; unique (student_id, date) |
+| `users` | the accounts that can log in |
+| `posts` | id, title, content |
 
-## Laravel Sponsors
+## How to run (XAMPP)
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+1. Start **MySQL** in the XAMPP Control Panel.
+2. Create an empty database named `bsis4b_plaza` (phpMyAdmin or `CREATE DATABASE bsis4b_plaza;`).
+3. In this folder, run:
 
-### Premium Partners
+   ```
+   composer install
+   copy .env.example .env
+   php artisan key:generate
+   ```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+4. Check `.env` (the example already has these):
 
-## Contributing
+   ```
+   APP_NAME="Attendance Management"
+   DB_DATABASE=bsis4b_plaza
+   ```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+5. Create the tables and the sample data:
 
-## Code of Conduct
+   ```
+   php artisan migrate --seed
+   ```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+6. Start the app and open http://localhost:8000
 
-## Security Vulnerabilities
+   ```
+   php artisan serve
+   ```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Demo account
 
-## License
+| Email | Password |
+| --- | --- |
+| admin@attendance.test | admin123 |
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+The sample data has 12 students (sections 4A and 4B) and attendance for the last 5 school days. The names are made up. To start over with fresh sample data, run `php artisan migrate:fresh --seed`.
+
+> Change the demo password before using the system with real students.
+
+## Project structure
+
+```
+app/Http/Controllers/
+    AuthController.php        login and logout
+    DashboardController.php   dashboard numbers
+    StudentController.php     students CRUD
+    AttendanceController.php  records CRUD and Take Attendance
+    ReportController.php      report and CSV export
+    PostController.php        posts CRUD
+app/Models/                   Student, Attendance, Post, User
+database/migrations/          table definitions
+database/seeders/             demo account and sample data
+resources/views/              Blade pages (layouts, students, attendances, reports, posts, auth)
+routes/web.php                all routes (everything except login needs a signed-in user)
+```

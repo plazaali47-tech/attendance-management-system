@@ -23,6 +23,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        // Bootstrap 5 nga itsura sang pagination links
+        \Illuminate\Pagination\Paginator::useBootstrap();
     }
 }
