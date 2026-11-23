@@ -4,44 +4,49 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', 'Attendance') · {{ config('app.name') }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet">
+    @include('layouts._theme')
 </head>
-<body class="bg-light">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary d-print-none">
+<body>
+    @php
+        $links = [
+            ['dashboard',          'dashboard',      'bi-grid-1x2',        'Dashboard'],
+            ['students.index',     'students.*',     'bi-people',          'Students'],
+            ['attendance.take',    'attendance.take*', 'bi-check2-square', 'Take Attendance'],
+            ['attendances.index',  'attendances.*',  'bi-journal-text',    'Records'],
+            ['reports.index',      'reports.*',      'bi-bar-chart-line',  'Reports'],
+            ['posts.index',        'posts.*',        'bi-megaphone',       'Posts'],
+        ];
+        $me = auth()->user();
+        $initials = collect(explode(' ', $me->name))->map(fn ($w) => mb_substr($w, 0, 1))->take(2)->implode('');
+    @endphp
+
+    <nav class="navbar navbar-expand-lg navbar-light app-nav sticky-top d-print-none">
         <div class="container">
             <a class="navbar-brand" href="{{ route('dashboard') }}">
-                <i class="bi bi-calendar-check"></i> Attendance Management
+                <span class="brand-mark"><i class="bi bi-calendar2-check"></i></span>
+                <span>Attendance<span class="d-none d-sm-inline"> Management</span></span>
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="mainNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">Dashboard</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('students.*') ? 'active' : '' }}" href="{{ route('students.index') }}">Students</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('attendance.take*') ? 'active' : '' }}" href="{{ route('attendance.take') }}">Take Attendance</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('attendances.*') ? 'active' : '' }}" href="{{ route('attendances.index') }}">Records</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('reports.*') ? 'active' : '' }}" href="{{ route('reports.index') }}">Reports</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('posts.*') ? 'active' : '' }}" href="{{ route('posts.index') }}">Posts</a>
-                    </li>
+                <ul class="navbar-nav mx-auto">
+                    @foreach($links as [$route, $pattern, $icon, $label])
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs($pattern) ? 'active' : '' }}" href="{{ route($route) }}"><i class="bi {{ $icon }}"></i>{{ $label }}</a>
+                        </li>
+                    @endforeach
+                </ul>
+                <ul class="navbar-nav">
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="userMenu" role="button" data-bs-toggle="dropdown">
-                            <i class="bi bi-person-circle"></i> {{ auth()->user()->name }}
+                        <a class="nav-link user-chip dropdown-toggle d-flex align-items-center" href="#" id="userMenu" role="button" data-bs-toggle="dropdown">
+                            <span class="avatar-sm">{{ mb_strtoupper($initials) }}</span>{{ $me->name }}
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li class="dropdown-item-text small text-muted">{{ auth()->user()->email }}</li>
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-3">
+                            <li class="dropdown-item-text small text-muted">{{ $me->email }}</li>
                             <li><hr class="dropdown-divider"></li>
                             <li>
                                 <form action="{{ route('logout') }}" method="POST">
@@ -58,15 +63,16 @@
 
     <main class="container py-4">
         @if(session('success'))
-            <div class="alert alert-success alert-dismissible fade show">
-                {{ session('success') }}
+            <div class="alert alert-success alert-dismissible fade show d-flex align-items-center gap-2">
+                <i class="bi bi-check-circle-fill"></i><div>{{ session('success') }}</div>
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         @endif
 
         @if($errors->any())
-            <div class="alert alert-danger">
-                <ul class="mb-0">
+            <div class="alert alert-danger d-flex gap-2">
+                <i class="bi bi-exclamation-octagon-fill"></i>
+                <ul class="mb-0 ps-3">
                     @foreach($errors->all() as $error)
                         <li>{{ $error }}</li>
                     @endforeach
@@ -77,6 +83,9 @@
         @yield('content')
     </main>
 
+    <footer class="text-center small text-muted pb-4 d-print-none">Attendance Management System · BSIS 4B</footer>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    @stack('scripts')
 </body>
 </html>

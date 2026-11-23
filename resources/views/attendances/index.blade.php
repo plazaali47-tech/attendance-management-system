@@ -67,7 +67,12 @@
                 @forelse($records as $record)
                 <tr>
                     <td class="text-nowrap">{{ $record->date->format('M d, Y') }}</td>
-                    <td><a href="{{ route('students.show', $record->student) }}">{{ $record->student->full_name }}</a></td>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="avatar-sm">{{ mb_substr($record->student->first_name, 0, 1) }}{{ mb_substr($record->student->last_name, 0, 1) }}</span>
+                            <a href="{{ route('students.show', $record->student) }}" class="fw-semibold text-decoration-none text-reset">{{ $record->student->full_name }}</a>
+                        </div>
+                    </td>
                     <td>{{ $record->student->section }}</td>
                     <td><span class="badge bg-{{ $record->badge }}">{{ $record->status_label }}</span></td>
                     <td>{{ $record->time_in ? \Carbon\Carbon::parse($record->time_in)->format('h:i A') : '—' }}</td>

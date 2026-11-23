@@ -40,8 +40,13 @@
             <tbody>
                 @forelse($students as $student)
                 <tr>
-                    <td>{{ $student->student_no }}</td>
-                    <td>{{ $student->full_name }}</td>
+                    <td class="text-muted">{{ $student->student_no }}</td>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="avatar-sm">{{ mb_substr($student->first_name, 0, 1) }}{{ mb_substr($student->last_name, 0, 1) }}</span>
+                            <a href="{{ route('students.show', $student) }}" class="fw-semibold text-decoration-none text-reset">{{ $student->full_name }}</a>
+                        </div>
+                    </td>
                     <td>{{ $student->course }}</td>
                     <td>{{ $student->year_level }} - {{ $student->section }}</td>
                     <td class="text-end text-nowrap">
