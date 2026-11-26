@@ -46,7 +46,11 @@
                             <span class="avatar-sm">{{ mb_strtoupper($initials) }}</span>{{ $me->name }}
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-3">
-                            <li class="dropdown-item-text small text-muted">{{ $me->email }}</li>
+                            <li class="dropdown-item-text small text-muted">{{ $me->email }}@if($me->is_admin) · <b>Admin</b>@endif</li>
+                            @if($me->is_admin)
+                                <li><a class="dropdown-item" href="{{ route('users.index') }}"><i class="bi bi-people-fill"></i> Manage Users</a></li>
+                            @endif
+                            <li><a class="dropdown-item" href="{{ route('password.change') }}"><i class="bi bi-shield-lock"></i> Change Password</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li>
                                 <form action="{{ route('logout') }}" method="POST">

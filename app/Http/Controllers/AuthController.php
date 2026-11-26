@@ -26,6 +26,12 @@ class AuthController extends Controller
             ]);
         }
 
+        // A deactivated account cannot sign in
+        if (!Auth::user()->is_active) {
+            Auth::logout();
+            throw ValidationException::withMessages(['email' => 'Your account was deactivated. Please contact the admin.']);
+        }
+
         $request->session()->regenerate();
 
         return redirect()->intended(route('dashboard'));

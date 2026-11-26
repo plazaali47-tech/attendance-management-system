@@ -8,7 +8,9 @@ Teachers can keep a list of students, take attendance for a whole section in one
 
 | Module | What it does |
 | --- | --- |
-| **Login** | Only signed-in users can open the system. Login attempts are limited to 5 per minute. |
+| **Login** | Only signed-in users can open the system. Login attempts are limited to 5 per minute. Deactivated accounts cannot sign in. |
+| **Manage Users** (admin, CRUD) | The admin adds, edits, deactivates/activates and deletes user accounts, and can reset a password. You cannot deactivate or delete yourself, and there is always at least one active admin. |
+| **Change Password** | Every user changes their own password (the current password is asked first; new one needs 8+ characters with letters and numbers). |
 | **Dashboard** | Today's count of Present, Late, Absent and Excused, students not yet recorded, recent records, and the students with the most absences. |
 | **Students** (CRUD) | Add, view, edit and delete students. Search by student no. or name, filter by section. Each student has a profile with their attendance history. |
 | **Take Attendance** | Pick a date and section, then mark every student at once (Mark all Present / Absent). Time In is filled in automatically for Present and Late. Saving again updates the same records instead of making duplicates. |
@@ -64,11 +66,12 @@ Teachers can keep a list of students, take attendance for a whole section in one
    php artisan serve
    ```
 
-### Demo account
+### Demo accounts
 
-| Email | Password |
-| --- | --- |
-| admin@attendance.test | admin123 |
+| Role | Email | Password |
+| --- | --- | --- |
+| Admin (can Manage Users) | admin@attendance.test | admin123 |
+| Teacher (normal user) | teacher@attendance.test | teacher2026 |
 
 The sample data has 12 students (sections 4A and 4B) and attendance for the last 5 school days. The names are made up. To start over with fresh sample data, run `php artisan migrate:fresh --seed`.
 

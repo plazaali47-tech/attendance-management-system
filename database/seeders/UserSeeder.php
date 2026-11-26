@@ -9,15 +9,24 @@ use Illuminate\Support\Facades\Hash;
 class UserSeeder extends Seeder
 {
     /**
-     * Demo account para sa presentation.
-     * Email: admin@attendance.test  Password: admin123
+     * Demo accounts para sa presentation.
+     *   Admin   : admin@attendance.test    Password: admin123
+     *   Teacher : teacher@attendance.test  Password: teacher2026
      * Ilisan ang password kon gamiton sa tuod nga klase.
      */
     public function run()
     {
-        User::updateOrCreate(
-            ['email' => 'admin@attendance.test'],
-            ['name' => 'Admin', 'password' => Hash::make('admin123')]
-        );
+        $this->account('admin@attendance.test', 'Admin', 'admin123', true);
+        $this->account('teacher@attendance.test', 'Teacher Ana', 'teacher2026', false);
+    }
+
+    private function account(string $email, string $name, string $password, bool $admin): void
+    {
+        $u = User::firstOrNew(['email' => $email]);
+        $u->name = $name;
+        $u->password = Hash::make($password);
+        $u->is_admin = $admin;      // not mass-assignable, set directly
+        $u->is_active = true;
+        $u->save();
     }
 }

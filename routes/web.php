@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\PasswordController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ReportController;
@@ -22,7 +24,17 @@ Route::middleware('guest')->group(function () {
 Route::post('logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
 
 // Tanan nga page sa ubos kinahanglan naka-login
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'active'])->group(function () {
+    // Change Password (every account)
+    Route::get('account/password', [PasswordController::class, 'edit'])->name('password.change');
+    Route::put('account/password', [PasswordController::class, 'update'])->name('password.change.update');
+
+    // Manage Users (admin only)
+    Route::middleware('admin')->group(function () {
+        Route::post('users/{user}/toggle', [UserController::class, 'toggle'])->name('users.toggle');
+        Route::resource('users', UserController::class)->except('show');
+    });
+
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
     // Attendance Management
